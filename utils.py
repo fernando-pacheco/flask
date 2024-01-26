@@ -11,7 +11,7 @@ class JogoForm(FlaskForm):
 
 class UserForm(FlaskForm):
     nickname = StringField('Nickname', [validators.DataRequired(), validators.Length(min=1, max=8)])
-    password = PasswordField('Password', [validators.DataRequired(), validators.Length(min=1, max=8)])
+    senha = PasswordField('Senha', [validators.DataRequired(), validators.Length(min=1, max=8)])
     login = SubmitField('Login')
 
 def recuperar_imagem(id):

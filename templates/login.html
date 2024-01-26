@@ -11,9 +11,10 @@
         {{ form.senha.label(class="form-label") }}
         {{ form.senha(class="form-control") }}
     </div>
+    <br>
     <div class="form-group">
         {{ form.login(class="btn btn-primary") }}
+        <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
     </div>
 </form>
-<a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
 {% endblock content %}
