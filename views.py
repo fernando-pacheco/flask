@@ -23,14 +23,23 @@ def editar(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return redirect(url_for('login', proxima=url_for('editar')))
     jogo = Jogos.query.filter_by(id=id).first()
+    form = JogoForm()
+    form.nome.data = jogo.nome
+    form.categoria.data = jogo.categoria
+    form.console.data = jogo.console
     capa_jogo = recuperar_imagem(id)
-    return render_template('editar.html', titulo="Editando jogo", jogo=jogo, capa_jogo=capa_jogo)
+    return render_template('editar.html', titulo="Editando jogo", jogo=jogo, capa_jogo=capa_jogo, form=form)
 
 @app.route('/criar', methods=['POST'])
 def criar():
-    nome = request.form['nome']
-    categoria = request.form['categoria']
-    console = request.form['console']
+    form = JogoForm(request.form)
+
+    if not form.validate_on_submit():
+        return redirect(url_for('novo'))
+
+    nome = form.nome.data
+    categoria = form.categoria.data
+    console = form.console.data
     jogo = Jogos.query.filter_by(nome=nome).first()
 
     if jogo:
