@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from models import Jogos, Usuarios
 from jogoteca import app, db
-from utils import recuperar_imagem, deletar_arquivo
+from utils import recuperar_imagem, deletar_arquivo, JogoForm
 import time
 
 # ROTAS
@@ -14,8 +14,9 @@ def index():
 def novo():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return redirect(url_for('login', proxima=url_for('novo')))
-    else:
-        return render_template('novo.html', titulo="Cadastrar novo jogo")
+    
+    form = JogoForm()
+    return render_template('novo.html', titulo="Cadastrar novo jogo", form=form)
     
 @app.route('/editar/<int:id>')
 def editar(id):
