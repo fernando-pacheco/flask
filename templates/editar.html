@@ -11,7 +11,8 @@
         </figcaption>
     </figure>
     <fieldset>
-        <input type="hidden" name="id" value="{{ jogo.id }}">
+        <input type="hidden" name="id" value="{{ id }}">
+        {{ form.csrf_token() }}
         <div class="form-group">
             {{ form.nome.label(class="form-label") }}
             {{ form.nome(class="form-control") }}
@@ -24,7 +25,8 @@
             {{ form.console.label(class="form-label") }}
             {{ form.console(class="form-control") }}
         </div>
-        <div>
+        <br>
+        <div class="form-group">
             {{ form.salvar(class="btn btn-primary") }}
             <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
         </div>

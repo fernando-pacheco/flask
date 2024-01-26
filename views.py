@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from models import Jogos, Usuarios
 from jogoteca import app, db
-from utils import recuperar_imagem, deletar_arquivo, JogoForm
+from utils import recuperar_imagem, deletar_arquivo, JogoForm, UserForm
 import time
 
 # ROTAS
@@ -28,7 +28,7 @@ def editar(id):
     form.categoria.data = jogo.categoria
     form.console.data = jogo.console
     capa_jogo = recuperar_imagem(id)
-    return render_template('editar.html', titulo="Editando jogo", jogo=jogo, capa_jogo=capa_jogo, form=form)
+    return render_template('editar.html', titulo="Editando jogo", id=id, capa_jogo=capa_jogo, form=form)
 
 @app.route('/criar', methods=['POST'])
 def criar():
@@ -60,10 +60,16 @@ def criar():
     
 @app.route('/atualizar', methods=['POST'])
 def atualizar():
+    form = JogoForm(request.form)
+
+    if not form.validate_on_submit():
+        flash('Erro. Verifique os dados e tente novamente.')
+        return redirect(url_for('index'))
+
     jogo = Jogos.query.filter_by(id=request.form['id']).first()
-    jogo.nome = request.form['nome']
-    jogo.categoria = request.form['categoria']
-    jogo.console = request.form['console']
+    jogo.nome = form.nome.data
+    jogo.categoria = form.categoria.data
+    jogo.console = form.console.data
     db.session.add(jogo)
     db.session.commit()
 
@@ -78,8 +84,9 @@ def atualizar():
     
 @app.route('/login')
 def login():
+    form = UserForm()
     proxima = request.args.get('proxima')
-    return render_template('login.html', titulo="Login", proxima=proxima)
+    return render_template('login.html', titulo="Login", proxima=proxima, form=form)
 
 @app.route('/autenticar', methods=['POST'])
 def autenticar():
