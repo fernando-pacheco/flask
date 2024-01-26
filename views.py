@@ -1,6 +1,8 @@
-from flask import render_template, request, redirect, session, flash, url_for
+from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from models import Jogos, Usuarios
 from jogoteca import app, db
+from utils import recuperar_imagem, deletar_arquivo
+import time
 
 # ROTAS
 @app.route('/')
@@ -20,7 +22,8 @@ def editar(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return redirect(url_for('login', proxima=url_for('editar')))
     jogo = Jogos.query.filter_by(id=id).first()
-    return render_template('editar.html', titulo="Editando jogo", jogo=jogo)
+    capa_jogo = recuperar_imagem(id)
+    return render_template('editar.html', titulo="Editando jogo", jogo=jogo, capa_jogo=capa_jogo)
 
 @app.route('/criar', methods=['POST'])
 def criar():
@@ -36,6 +39,12 @@ def criar():
         novo_jogo = Jogos(nome=nome, categoria=categoria, console=console)
         db.session.add(novo_jogo)
         db.session.commit()
+
+        arquivo = request.files['arquivo']
+        upload_path = app.config['UPLOAD_PATH']
+        timestamp = time.time()
+        arquivo.save(f'{upload_path}/capa_{novo_jogo.id}_{novo_jogo.nome}-{timestamp}.jpg')
+
         flash('Jogo criado com sucesso!')
         return redirect(url_for('index'))
     
@@ -47,6 +56,13 @@ def atualizar():
     jogo.console = request.form['console']
     db.session.add(jogo)
     db.session.commit()
+
+    arquivo = request.files['arquivo']
+    upload_path = app.config['UPLOAD_PATH']
+    timestamp = time.time()
+    deletar_arquivo(jogo.id)
+    arquivo.save(f'{upload_path}/capa_{jogo.id}_{jogo.nome}-{timestamp}.jpg')
+
     flash('Jogo atualizado com sucesso!')
     return redirect(url_for('index'))
     
@@ -93,3 +109,8 @@ def deletar(id):
     db.session.commit()
     flash('Jogo removido com sucesso!')
     return redirect(url_for('index'))
+
+@app.route('/uploads/<nome_arquivo>')
+def imagem(nome_arquivo):
+    return send_from_directory('uploads', nome_arquivo)
+

@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<form action="{{url_for('criar')}}" method="POST">
+<form action="{{url_for('criar')}}" method="POST" enctype="multipart/form-data">
+    <figure class="img-thumbnail col-md-4">
+        <img class="img-fluid" src="{{ url_for('imagem', nome_arquivo='default.png') }}" alt="">
+        <figcaption>
+            <label class="fileContainer">
+                Mudar Capa
+                <input type="file" name="arquivo" accept=".jpg">
+            </label>
+        </figcaption>
+    </figure>    
     <fieldset>
         <div class="form-group">
             <label for="nome">Nome</label>
